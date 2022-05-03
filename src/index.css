@@ -22,3 +22,14 @@ code {
 .mb-2 {
   margin-bottom: 2rem;
 }
+
+.link-active {
+  background-color: #2471A3;
+  color: #fff;
+  border-radius: 8px 0px 0px 8px;
+  
+}
+
+.link-active span, .link-active svg {
+  color: #fff;
+}

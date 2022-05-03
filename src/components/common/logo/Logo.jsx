@@ -6,7 +6,7 @@ const Logo = () => {
   return (
     <ContainerLogo>
          <ImageLogo src={ImgLogo} 
-              alt="" 
+              alt="logo" 
           />
           <PLogo className='font-logo'>Posada Real</PLogo>
     </ContainerLogo>

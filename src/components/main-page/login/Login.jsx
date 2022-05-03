@@ -7,6 +7,7 @@ import { useFormik } from 'formik'
 import * as Yup from 'yup'
 import { Alert } from '@mui/material'
 import { Grid, TextField, Button, makeStyles, Box } from '@material-ui/core'
+import { useNavigate } from 'react-router-dom'
 
 //My imports
 import DivLogo from '../../common/divlogo/DivLogo'
@@ -46,9 +47,11 @@ const validationSchema = Yup.object({
 });
 
 const Login = ({setLoginSuccess}) => {
+
   const [showAlert, setShowAlert] = useState(false);
   const [showSpinner, setShowSpinner] = useState(false);
   const [msgAlert, setMsgAlert] = useState('');
+  const navigateTo = useNavigate();
 
   const formik = useFormik({
     initialValues: {
@@ -89,6 +92,7 @@ const Login = ({setLoginSuccess}) => {
       localStorage.setItem('r', responseJSON.result.role);
       localStorage.setItem('t', responseJSON.result.token);
       localStorage.setItem('n', responseJSON.result.name);
+      navigateTo('/');
 
     } catch (error) {
         setShowAlert(true);
