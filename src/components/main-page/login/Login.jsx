@@ -1,20 +1,26 @@
-import { Grid, TextField, Button, makeStyles, Box } from '@material-ui/core'
+
 import { useState } from 'react'
-import styled from '@emotion/styled';
-import { useFormik } from 'formik';
+
+//libs
+import styled from '@emotion/styled'
+import { useFormik } from 'formik'
 import * as Yup from 'yup'
-import service from '../../../service';
-import { cleanAlert } from '../../common/functions/general';
-import { Alert, Typography } from '@mui/material';
-import Spinner from '../../common/spinner/Spinner';
-import AccountCircle from '@material-ui/icons/AccountCircle';
-import VpnKeyIcon from '@material-ui/icons/VpnKey';
-import VideoHotelLogin from '../../../videos/hotel-login.mp4';
-import Logo from '../../common/logo/Logo';
+import { Alert } from '@mui/material'
+import { Grid, TextField, Button, makeStyles, Box } from '@material-ui/core'
+
+//My imports
+import DivLogo from '../../common/divlogo/DivLogo'
+import VideoHotelLogin from '../../../videos/hotel-login.mp4'
+import Spinner from '../../common/spinner/Spinner'
+import { cleanAlert } from '../../common/functions/general'
+import service from '../../../service'
+
+//Icons
+import AccountCircle from '@material-ui/icons/AccountCircle'
+import VpnKeyIcon from '@material-ui/icons/VpnKey'
 
 const FormLogin = styled.form`
-    padding: 0 2rem;
-  
+    padding: 2rem 2rem;
     @media (max-width: 480px) {
       margin-top: 2rem; 
     }
@@ -25,17 +31,8 @@ const Video = styled.video`
   border-radius: 10px;
 `;
 
-const DivLogo = styled.div`
-  display:flex;
-  justify-content: center;
-  margin-bottom: 1rem;
-`;
-
-const Hr = styled.hr`
-  height: 0.2rem;
-  background-color: black;
-  border-radius: 30px;
-  width: 10rem;
+const DivVideo = styled.div`
+  
 `;
 
 const validationSchema = Yup.object({
@@ -101,79 +98,79 @@ const Login = ({setLoginSuccess}) => {
 }
 
   return (
-    <Box px={2}>
-        <Grid container>
+    <Box px={1} py={4}>
+        <Grid container spacing={2}>
             <Grid item
                   container
                   xs={12}
                   md={7}
                   alignItems='center'
-            >
+            > 
+            <DivVideo>
                 <Video autoPlay muted loop>
                     <source src={VideoHotelLogin} type='video/mp4' />
                 </Video>
+            </DivVideo>
             </Grid>
 
             <Grid item
                   xs={12}
                   md={5}
             >
+              
                 <FormLogin onSubmit={formik.handleSubmit}>
-                      { showAlert && <Alert severity="error"> {msgAlert} </Alert>}
-                      
-                      <DivLogo >
-                            <Logo />
-                      </DivLogo>
-                      <Hr />
-                      <Typography variant="h5" color="initial" align='center'>
-                          Sign In
-                      </Typography>
-                      <Box mb={2}>
-                          <Grid container spacing={1} alignItems="flex-end" >
-                            <Grid item>
-                              <AccountCircle />
-                            </Grid>
-                            <Grid item xs={11}>
-                              <TextField
-                                fullWidth
-                                id="email"
-                                name="email"
-                                label="Email"
-                                value={formik.values.email}
-                                onChange={formik.handleChange}
-                                error={formik.touched.email && Boolean(formik.errors.email)}
-                                helperText={formik.touched.email && formik.errors.email}
-                                disabled={showSpinner}
-                              />
-                            </Grid>
-                          </Grid>
-                      </Box>
-                      
-                      <Box mb={3}>
-                          <Grid container spacing={1} alignItems="flex-end" className='mb-2'>
-                            <Grid item>
-                              <VpnKeyIcon />
-                            </Grid>
-                            <Grid item xs={11}>
-                              <TextField
-                                fullWidth
-                                id="password"
-                                name="password"
-                                label="Password"
-                                type="password"
-                                value={formik.values.password}
-                                onChange={formik.handleChange}
-                                error={formik.touched.password && Boolean(formik.errors.password)}
-                                helperText={formik.touched.password && formik.errors.password}
-                                disabled={showSpinner}
-                              />
-                            </Grid>
-                          </Grid>
-                      </Box>
-
-                      <Button color="primary" variant="contained" fullWidth type="submit" disabled={showSpinner}>
-                        Sign in
-                      </Button>
+                      { showAlert && <Alert severity="error"> {msgAlert} </Alert>}       
+                      <DivLogo msg='Sign In' />
+                      { !showSpinner && (
+                       <div>
+                          <Box mb={2}>
+                              <Grid container spacing={1} alignItems="flex-end" >
+                                <Grid item>
+                                  <AccountCircle />
+                                </Grid>
+                                <Grid item xs={11}>
+                                  <TextField
+                                    fullWidth
+                                    id="email"
+                                    name="email"
+                                    label="Email"
+                                    value={formik.values.email}
+                                    onChange={formik.handleChange}
+                                    error={formik.touched.email && Boolean(formik.errors.email)}
+                                    helperText={formik.touched.email && formik.errors.email}
+                                    disabled={showSpinner}
+                                  />
+                                </Grid>
+                              </Grid>
+                          </Box>
+                          
+                          <Box mb={3}>
+                              <Grid container spacing={1} alignItems="flex-end" className='mb-2'>
+                                <Grid item>
+                                  <VpnKeyIcon />
+                                </Grid>
+                                <Grid item xs={11}>
+                                  <TextField
+                                    fullWidth
+                                    id="password"
+                                    name="password"
+                                    label="Password"
+                                    type="password"
+                                    value={formik.values.password}
+                                    onChange={formik.handleChange}
+                                    error={formik.touched.password && Boolean(formik.errors.password)}
+                                    helperText={formik.touched.password && formik.errors.password}
+                                    disabled={showSpinner}
+                                  />
+                                </Grid>
+                              </Grid>
+                          </Box>
+                          
+                          <Button color="primary" variant="contained" fullWidth type="submit" disabled={showSpinner}>
+                            Sign in
+                          </Button>
+                      </div>
+                      ) }
 
                       { showSpinner && <Spinner /> }
                 </FormLogin>
