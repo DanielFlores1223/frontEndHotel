@@ -79,7 +79,6 @@ const Register = () => {
     try {
       const response = await fetch(url, fetchConfig);
       const responseJSON = await response.json();
-      console.log(responseJSON)
       
       if (!responseJSON.success) {
         return;

@@ -43,7 +43,7 @@ const Menu = ( { children, setLoginSuccess } ) => {
             <div className={classes.content}>
                <div className={classes.toolbar}></div>
    
-               <div style={{marginTop: '2rem'}}>
+               <div style={{marginTop: '2rem', marginLeft: '2rem', marginRight: '2rem'}}>
                    <Outlet/>
                </div>
             </div>
