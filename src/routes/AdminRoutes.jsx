@@ -6,6 +6,7 @@ import Home from '../components/admin/home/Home';
 import LayoutAdmin from '../components/admin/LayoutAdmin';
 import FormRoom from '../components/admin/rooms/FormRoom';
 import FormTypeRooms from '../components/admin/rooms/FormTypeRooms';
+import InfoRoom from '../components/admin/rooms/InfoRoom';
 import Rooms from '../components/admin/rooms/Rooms';
 
 const AdminRoutes = ( { setLoginSuccess } ) => {
@@ -18,6 +19,7 @@ const AdminRoutes = ( { setLoginSuccess } ) => {
                  <Route path='form-type-rooms' element={<FormTypeRooms />} />
                  <Route path='form-rooms' element={<FormRoom />} />
                  <Route path='form-rooms/:id' element={<FormRoom />} />
+                 <Route path='info-room/:id' element={<InfoRoom />} />
               </Route>
           </Routes>
    </BrowserRouter> 

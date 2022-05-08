@@ -9,6 +9,7 @@ import {useState, useEffect} from 'react'
 import { DataGrid  } from '@material-ui/data-grid'
 import { Grid, Button, Box, Hidden, Typography } from '@material-ui/core'
 import { useNavigate } from 'react-router-dom'
+import { useSnackbar } from 'notistack'
 
 //My imports
 import service from '../../../service'
@@ -19,6 +20,9 @@ import HrTittle from '../../common/hr/HrTittle'
 //icons
 import AddIcon from '@mui/icons-material/Add'
 import Hr from '../../common/hr/Hr'
+import NoMeetingRoomIcon from '@material-ui/icons/NoMeetingRoom'
+import CheckCircleIcon from '@material-ui/icons/CheckCircle'
+import InfoIcon from '@material-ui/icons/Info'
 
 //Button Edit
 import EditIcon from '@material-ui/icons/Edit';
@@ -30,12 +34,11 @@ const renderEditButton = (params) => {
      return (
          <strong>
              <Button
-                 variant="contained"
+                 variant="text"
                  color="primary"
                  size="small"
                  style={{ marginLeft: 16 }}
                  onClick={() => {
-                     console.log(params.id)
                      navigateTo(`/form-rooms/${params.id}`)
                  }}
              >
@@ -45,32 +48,125 @@ const renderEditButton = (params) => {
      )
 }
 
+const renderInfoButton = (params) => {
+     const navigateTo = useNavigate();
+
+     return (
+         <strong>
+             <Button
+                 variant="text"
+                 color="primary"
+                 size="small"
+                 style={{ marginLeft: 16 }}
+                 onClick={() => {
+                     navigateTo(`/info-room/${params.id}`)
+                 }}
+             >
+                 <InfoIcon />
+             </Button>
+         </strong>
+     )
+}
+
+const renderDeleteButton = (params) => {
+     const { enqueueSnackbar }  = useSnackbar();
+     const navigateTo = useNavigate();
+     return (
+          <strong>
+              <Button
+                  variant="text"
+                  color="primary"
+                  size="small"
+                  style={{ marginLeft: 16 }}
+                  onClick={async () => {
+                    console.log(params.row.status);
+                    let status = '';
+                    
+                    if (params.row.status === 'unvailable') {
+                         status='available'
+                    }else{
+                         status='unvailable'
+                    }
+
+                    const { developURL } = service;
+               
+                    const url = `${developURL}/room/${params.id}`;
+                    const data = { status }
+               
+                    const fetchConfig = {
+                              method: 'PUT', 
+                              headers: { 'Content-Type': 'application/json', 'Authorization': getToken() },
+                              body: JSON.stringify(data)
+                         }
+               
+                    try {
+                         
+                         const response = await fetch( url, fetchConfig );
+                         const responseJSON = await response.json();
+               
+                         console.log(responseJSON)
+                         if (!responseJSON.success) {
+                              enqueueSnackbar( responseJSON.msg , { variant: 'error', } );
+                             return;
+                           }
+               
+                           navigateTo('/rooms');
+                           enqueueSnackbar( responseJSON.msg , { variant: 'success', } );
+                    } catch (error) {
+                         //Error
+                         enqueueSnackbar( responseJSON.msg , { variant: 'something went wrong... Try again later', } );
+                    }
+                  }}
+              >
+                   { params.row.status === 'unvailable' && (<CheckCircleIcon />) }
+                   { params.row.status === 'available' && (<NoMeetingRoomIcon />) }
+              </Button>
+          </strong>
+      )
+}
+
+
+//Config DataGrid (Table) columns
 const columnsMdUp = [
      {
        field: 'name',
        headerName: 'Name',
-       width: 210,
+       width: 200,
      },
      {
        field: 'floor',
        headerName: 'Floor',
-       width: 210,
+       width: 200,
      },
      {
        field: 'status',
        headerName: 'Status',
-       width: 210,
+       width: 200,
      },
      {
           field: 'typeRoomName',
           headerName: 'Type',
-          width: 210,
+          width: 200,
      },
      {
-          headerName: 'Actions',
+          headerName: '---',
           field: 'actions',
-          width: 210,
+          width: 100,
           renderCell: renderEditButton,
+          disableClickEventBubbling: true,
+     },
+     {
+          headerName: '---',
+          field: 'deletedAct',
+          width: 100,
+          renderCell: renderDeleteButton,
+          disableClickEventBubbling: true,
+     },
+     {
+          headerName: '---',
+          field: 'infoAct',
+          width: 100,
+          renderCell: renderInfoButton,
           disableClickEventBubbling: true,
      }
 ];
@@ -94,6 +190,20 @@ const columnsMdDown = [
           headerName: 'Status',
           width: 150,
         },
+        {
+          headerName: '---',
+          field: 'actions',
+          width: 100,
+          renderCell: renderEditButton,
+          disableClickEventBubbling: true,
+        },
+        {
+             headerName: '---',
+             field: 'deletedAct',
+             width: 100,
+             renderCell: renderDeleteButton,
+             disableClickEventBubbling: true,
+        }
 ]
 
 const RoomsDash = () => {
@@ -146,6 +256,15 @@ const RoomsDash = () => {
      useEffect(() => {
           getRooms();
      }, []);
+
+     const updateTable = async (event) => {
+          if(event.field === 'deletedAct'){
+               setTimeout(() => {
+                    getRooms();
+               },1000)
+               
+           }
+     }
 
      return (
 
@@ -207,6 +326,7 @@ const RoomsDash = () => {
                                     pageSize={3}
                                     rowsPerPageOptions={[3]}
                                     disableSelectionOnClick
+                                    onCellClick={ (e) => updateTable(e) }
                                   />
                               </div>
                          </Hidden>
@@ -219,6 +339,7 @@ const RoomsDash = () => {
                                     pageSize={3}
                                     rowsPerPageOptions={[3]}
                                     disableSelectionOnClick
+                                    onCellClick={ (e) => updateTable(e) }
                                   />
                               </div>
                          </Hidden>
