@@ -29,7 +29,7 @@ const columnsMdUp = [
      {
        field: 'features',
        headerName: 'Features',
-       width: 500,
+       width: 350,
      },
      {
        field: 'price',

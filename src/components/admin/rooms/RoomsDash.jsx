@@ -131,22 +131,22 @@ const columnsMdUp = [
      {
        field: 'name',
        headerName: 'Name',
-       width: 200,
+       width: 170,
      },
      {
        field: 'floor',
        headerName: 'Floor',
-       width: 200,
+       width: 170,
      },
      {
        field: 'status',
        headerName: 'Status',
-       width: 200,
+       width: 170,
      },
      {
           field: 'typeRoomName',
           headerName: 'Type',
-          width: 200,
+          width: 170,
      },
      {
           headerName: '---',
@@ -178,17 +178,17 @@ const columnsMdDown = [
      {
           field: 'name',
           headerName: 'Name',
-          width: 150,
+          width: 115,
         },
         {
           field: 'floor',
           headerName: 'Floor',
-          width: 150,
+          width: 115,
         },
         {
           field: 'status',
           headerName: 'Status',
-          width: 150,
+          width: 115,
         },
         {
           headerName: '---',
@@ -203,7 +203,14 @@ const columnsMdDown = [
              width: 100,
              renderCell: renderDeleteButton,
              disableClickEventBubbling: true,
-        }
+        },
+        {
+          headerName: '---',
+          field: 'infoAct',
+          width: 100,
+          renderCell: renderInfoButton,
+          disableClickEventBubbling: true,
+     }
 ]
 
 const RoomsDash = () => {
