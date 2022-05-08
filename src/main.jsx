@@ -6,7 +6,6 @@ import Slide from '@material-ui/core/Slide';
 import { SnackbarProvider } from 'notistack';
 
 ReactDOM.render(
-  <React.StrictMode>
       <SnackbarProvider
           anchorOrigin={{
               vertical: 'top',
@@ -16,7 +15,6 @@ ReactDOM.render(
           maxSnack={3}
       >
         <App />
-      </SnackbarProvider>
-  </React.StrictMode>,
+      </SnackbarProvider>,
   document.getElementById('root')
 )

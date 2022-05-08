@@ -68,8 +68,13 @@ const FormRoom = () => {
      const [showSpinner, setShowSpinner] = useState(true);
      const navigateTo = useNavigate();
      const { id } = useParams();
-     const [edit, setEdit] = useState(false);
-     const [roomInfo, setRoomInfo] = useState({});
+     const [showSpinnerUpdate, setShowSpinnerUpdate] = useState(id !== undefined ? true : false);
+     const [edit, setEdit] = useState( id !== undefined ? true : false );
+     const [roomInfo, setRoomInfo] = useState({
+          name: '',
+          floor: '',
+          idTypeRoom: ''
+     });
      const { enqueueSnackbar }  = useSnackbar();
 
      let formik = useFormik({
@@ -176,7 +181,8 @@ const FormRoom = () => {
                setRoomInfo(responseJSON.result)
                formik.values.name = roomInfo.name;
                formik.values.floor = roomInfo.floor;
-               formik.values.idTypeRoom = roomInfo.idTypeRoom;
+               formik.values.idTypeRoom = roomInfo.idTypeRoom._id;
+
           } catch (error) {
                //Error
                
@@ -199,7 +205,6 @@ const FormRoom = () => {
                const response = await fetch( url, fetchConfig );
                const responseJSON = await response.json();
 
-               console.log(responseJSON)
                if (!responseJSON.success) {
                     enqueueSnackbar( responseJSON.msg , { variant: 'error', } );
                    return;
@@ -215,11 +220,9 @@ const FormRoom = () => {
      }
 
      useEffect( () => {
-          
           if (id !== undefined) {
                setEdit(true);
                getRoom( id );
-               console.log('editar');
           } else {
                setEdit(false)
           }
@@ -232,7 +235,10 @@ const FormRoom = () => {
           if (edit) {
                formik.values.name = roomInfo.name;
                formik.values.floor = roomInfo.floor;
-               formik.values.idTypeRoom = roomInfo.idTypeRoom;
+               formik.values.idTypeRoom = roomInfo.idTypeRoom._id;
+               setTimeout(() => {
+                    setShowSpinnerUpdate(false);
+               },1000)
           }
      }, [roomInfo])
 
@@ -258,7 +264,9 @@ const FormRoom = () => {
                      </Grid>
                 </Grid>
           </Box>
-          <Grid container item xs={12} justifyContent='center'>
+          {
+             showSpinnerUpdate ? ( <Spinner /> ) : (
+<Grid container item xs={12} justifyContent='center'>
                {/* FORM */}
                <FormStyled onSubmit={formik.handleSubmit}>
                     <Grid container item xs={12}>
@@ -328,7 +336,7 @@ const FormRoom = () => {
                                                                  error={formik.touched.idTypeRoom && Boolean(formik.errors.idTypeRoom)} 
                                                                  fullWidth
                                                        >
-                                                            <InputLabel htmlFor="name-native-error">
+                                                            <InputLabel htmlFor="idTypeRoom">
                                                                  Select Type of Room
                                                             </InputLabel>
                                                             <Select
@@ -337,7 +345,7 @@ const FormRoom = () => {
                                                               label="idTypeRoom"
                                                               inputProps={{
                                                                 name: 'idTypeRoom',
-                                                                id: 'name-native-error',
+                                                                id: 'idTypeRoom',
                                                               }}
                                                               defaultValue={ edit ? formik.values.idTypeRoom : '' }
                                                             >
@@ -400,6 +408,9 @@ const FormRoom = () => {
                     </Grid> 
                </FormStyled>
           </Grid> 
+             )
+          } 
+          
        </>
      )    
 }    
