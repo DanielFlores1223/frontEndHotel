@@ -17,3 +17,19 @@ export const generateIdUnique = () => {
      const dateNow = Date.now().toString(36);
      return random + dateNow;
 }
+
+export const giveFormatDate = ( date ) => {
+     /*
+          This function converts this format "dd/mm/yyyy" to "yyyy-mm-dd"
+     */
+     const formatEs = new Date(date)
+                                   .toLocaleDateString('es-ES', { year: 'numeric', 
+                                                                  month: '2-digit', 
+                                                                  day: '2-digit' });
+                                                  
+     const separeteDate = formatEs.split('/');
+
+     const formatYYYYMMDD = `${separeteDate[2]}-${separeteDate[1]}-${separeteDate[0]}`;
+
+     return formatYYYYMMDD;
+}
