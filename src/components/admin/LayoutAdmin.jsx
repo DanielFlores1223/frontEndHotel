@@ -10,6 +10,7 @@ import { LinkMenu } from '../common/link-menu/LinkMenu'
 //icons
 import HomeIcon from '@mui/icons-material/Home'
 import MeetingRoomSharpIcon from '@mui/icons-material/MeetingRoomSharp'
+import BadgeIcon from '@mui/icons-material/Badge'
 
 const LayoutAdmin = ( { setLoginSuccess } ) => {
 
@@ -30,6 +31,12 @@ const LayoutAdmin = ( { setLoginSuccess } ) => {
                   >
                       <MeetingRoomSharpIcon/>
                       <span> Rooms </span>
+                  </LinkMenu>
+                  <LinkMenu to='/employees' 
+                            className={locationNow === '/employees' ? 'link-active': ''}
+                  >
+                      <BadgeIcon/>
+                      <span> Employees </span>
                   </LinkMenu>
              </Menu>
         </div>

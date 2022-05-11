@@ -8,7 +8,8 @@ import Menu from '../common/menu-users/Menu';
 import { LinkMenu } from '../common/link-menu/LinkMenu'
 
 //icons
-import HomeIcon from '@mui/icons-material/Home';
+import HomeIcon from '@mui/icons-material/Home'
+import LocalLibraryIcon from '@material-ui/icons/LocalLibrary'
 
 const LayoutCustomer = ( { setLoginSuccess } ) => {
 
@@ -23,6 +24,12 @@ const LayoutCustomer = ( { setLoginSuccess } ) => {
                    > 
                          <HomeIcon /> 
                          <span> Home </span>
+                   </LinkMenu>
+                   <LinkMenu to='/book' 
+                            className={locationNow === '/book' ? 'link-active': ''}
+                   > 
+                         <LocalLibraryIcon />  
+                         <span> Book </span>
                    </LinkMenu>
              </Menu>
         </div>

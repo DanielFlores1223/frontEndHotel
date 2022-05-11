@@ -10,10 +10,69 @@ import service from '../../../service'
 import { getToken } from '../../common/functions/general'
 import Spinner from '../../common/spinner/Spinner'
 import HrTittle from '../../common/hr/HrTittle'
+import { useSnackbar } from 'notistack'
 
 //icons
 import AddIcon from '@mui/icons-material/Add'
 import Hr from '../../common/hr/Hr'
+import DeleteIcon from '@mui/icons-material/Delete'
+
+//CRUD Actions
+const renderDeleteButton = (params) => {
+     const { enqueueSnackbar }  = useSnackbar();
+     const navigateTo = useNavigate();
+     return (
+          <strong>
+              <Button
+                  variant="text"
+                  color="primary"
+                  size="small"
+                  style={{ marginLeft: 16 }}
+                  onClick={async () => {
+                    console.log(params.row.status);
+                    let status = '';
+                    
+                    if (params.row.status === 'unvailable') {
+                         status='available'
+                    }else{
+                         status='unvailable'
+                    }
+
+                    const { developURL } = service;
+               
+                    const url = `${developURL}/typeRoom/${params.id}`;
+                    const data = { status }
+               
+                    const fetchConfig = {
+                              method: 'DELETE', 
+                              headers: { 'Content-Type': 'application/json', 'Authorization': getToken() },
+                              body: JSON.stringify(data)
+                         }
+               
+                    try {
+                         
+                         const response = await fetch( url, fetchConfig );
+                         const responseJSON = await response.json();
+               
+                         console.log(responseJSON)
+                         if (!responseJSON.success) {
+                              enqueueSnackbar( responseJSON.msg , { variant: 'error', } );
+                             return;
+                           }
+               
+                           navigateTo('/rooms');
+                           enqueueSnackbar( responseJSON.msg , { variant: 'success', } );
+                    } catch (error) {
+                         //Error
+                         enqueueSnackbar( responseJSON.msg , { variant: 'something went wrong... Try again later', } );
+                    }
+                  }}
+              >
+                   <DeleteIcon />
+              </Button>
+          </strong>
+      )
+}
 
 const columnsMdUp = [
      {
@@ -37,6 +96,13 @@ const columnsMdUp = [
        type: 'number',
        width: 200,
      },
+     {
+          headerName: '---',
+          field: 'deletedAct',
+          width: 100,
+          renderCell: renderDeleteButton,
+          disableClickEventBubbling: true,
+     }
 ];
 
 const columnsMdDown = [
@@ -103,6 +169,15 @@ const TypeRooms = () => {
           getTypeRooms();
      }, []);
 
+     const updateTable = async (event) => {
+          if(event.field === 'deletedAct'){
+               setTimeout(() => {
+                    getTypeRooms();
+               },1000)
+               
+           }
+     }
+
      return (
 
           <>
@@ -163,6 +238,7 @@ const TypeRooms = () => {
                                     pageSize={3}
                                     rowsPerPageOptions={[3]}
                                     disableSelectionOnClick
+                                    onCellClick={ (e) => updateTable(e) }
                                   />
                               </div>
                          </Hidden>
@@ -175,6 +251,7 @@ const TypeRooms = () => {
                                     pageSize={3}
                                     rowsPerPageOptions={[3]}
                                     disableSelectionOnClick
+                                    onCellClick={ (e) => updateTable(e) }
                                   />
                               </div>
                          </Hidden>

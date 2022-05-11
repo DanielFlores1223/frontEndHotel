@@ -1,7 +1,4 @@
-/*
-     This component can be used for Admins and Receptionists
-
-*/
+import React from 'react'
 
 import {useState, useEffect} from 'react'
 
@@ -23,6 +20,7 @@ import Hr from '../../common/hr/Hr'
 import NoMeetingRoomIcon from '@material-ui/icons/NoMeetingRoom'
 import CheckCircleIcon from '@material-ui/icons/CheckCircle'
 import InfoIcon from '@material-ui/icons/Info'
+import PersonAddDisabledIcon from '@material-ui/icons/PersonAddDisabled'
 
 //Button Edit
 import EditIcon from '@material-ui/icons/Edit';
@@ -48,7 +46,7 @@ const renderEditButton = (params) => {
      )
 }
 
-const renderInfoButton = (params) => {
+const renderInfoButton = (params , status) => {
      const navigateTo = useNavigate();
 
      return (
@@ -71,6 +69,7 @@ const renderInfoButton = (params) => {
 const renderDeleteButton = (params) => {
      const { enqueueSnackbar }  = useSnackbar();
      const navigateTo = useNavigate();
+
      return (
           <strong>
               <Button
@@ -82,15 +81,15 @@ const renderDeleteButton = (params) => {
                     console.log(params.row.status);
                     let status = '';
                     
-                    if (params.row.status === 'unvailable') {
-                         status='available'
+                    if (params.row.status) {
+                         status= false
                     }else{
-                         status='unvailable'
+                         status= true
                     }
 
                     const { developURL } = service;
                
-                    const url = `${developURL}/room/${params.id}`;
+                    const url = `${developURL}/user/${params.id}`;
                     const data = { status }
                
                     const fetchConfig = {
@@ -109,8 +108,7 @@ const renderDeleteButton = (params) => {
                               enqueueSnackbar( responseJSON.msg , { variant: 'error', } );
                              return;
                            }
-               
-                           navigateTo('/rooms');
+          
                            enqueueSnackbar( responseJSON.msg , { variant: 'success', } );
                     } catch (error) {
                          //Error
@@ -118,13 +116,12 @@ const renderDeleteButton = (params) => {
                     }
                   }}
               >
-                   { params.row.status === 'unvailable' && (<CheckCircleIcon />) }
-                   { params.row.status === 'available' && (<NoMeetingRoomIcon />) }
+                  { params.row.status && (<CheckCircleIcon />) }
+                   { !params.row.status && (<PersonAddDisabledIcon />) }
               </Button>
           </strong>
       )
 }
-
 
 //Config DataGrid (Table) columns
 const columnsMdUp = [
@@ -134,19 +131,25 @@ const columnsMdUp = [
        width: 170,
      },
      {
-       field: 'floor',
-       headerName: 'Floor',
+       field: 'lastName',
+       headerName: 'Last Name',
        width: 170,
      },
      {
-       field: 'status',
-       headerName: 'Status',
+       field: 'role',
+       headerName: 'Role',
        width: 170,
      },
      {
-          field: 'typeRoomName',
-          headerName: 'Type',
+          field: 'email',
+          headerName: 'Email',
           width: 170,
+     },
+     {
+          field: 'status',
+          headerName: '',
+          width: -1,
+          visible: false
      },
      {
           headerName: '---',
@@ -181,14 +184,21 @@ const columnsMdDown = [
           width: 115,
         },
         {
-          field: 'floor',
-          headerName: 'Floor',
+          field: 'lastName',
+          headerName: 'Last Name',
           width: 115,
         },
         {
-          field: 'status',
-          headerName: 'Status',
+          field: 'role',
+          headerName: 'Role',
           width: 115,
+        },
+        {
+          headerName: '---',
+          field: 'deletedAct',
+          width: 100,
+          renderCell: renderDeleteButton,
+          disableClickEventBubbling: true,
         },
         {
           headerName: '---',
@@ -197,13 +207,7 @@ const columnsMdDown = [
           renderCell: renderEditButton,
           disableClickEventBubbling: true,
         },
-        {
-             headerName: '---',
-             field: 'deletedAct',
-             width: 100,
-             renderCell: renderDeleteButton,
-             disableClickEventBubbling: true,
-        },
+
         {
           headerName: '---',
           field: 'infoAct',
@@ -213,18 +217,20 @@ const columnsMdDown = [
      }
 ]
 
-const RoomsDash = () => {
-     const [rooms, setRooms] = useState([]);
+const Employees = () => {
+     const [employees, setEmployees] = useState([]);
      const [showSpinner, setShowSpinner] = useState(true);
      const navigateTo = useNavigate();
 
-     const getRooms = async () => {
+     const getEmployees = async () => {
           const { developURL } = service;
 
-          const url = `${developURL}/rooms`;
+          const url = `${developURL}/user/searchFilterOr`;
+          const data = { filter1: 'role', value1: 'Receptionist', filter2: 'role', value2: 'Admin' };
           const fetchConfig = {
-                    method: 'GET', 
-                    headers: { 'Content-Type': 'application/json', 'Authorization': getToken() }
+                    method: 'POST', 
+                    headers: { 'Content-Type': 'application/json', 'Authorization': getToken() },
+                    body: JSON.stringify( data )
                }
 
           try {
@@ -239,21 +245,8 @@ const RoomsDash = () => {
                     return;
                }
 
-               const { result } = responseJSON;
-               let arrayEnd = [];
-
-               // This loop save the type of room of each room
-               for (let index = 0; index < result.length; index++) {
-
-                    if(result[index].idTypeRoom !== null){
-                         const dataEnd = { ...result[index], typeRoomName: result[index].idTypeRoom.name }
-                         arrayEnd = [...arrayEnd, dataEnd ];
-                    }
-                    
-               }
-
                //request successfully
-               setRooms( arrayEnd );
+               setEmployees( responseJSON.result );
           } catch (error) {
                //Error
 
@@ -261,104 +254,102 @@ const RoomsDash = () => {
      }
 
      useEffect(() => {
-          getRooms();
+          getEmployees();
      }, []);
 
      // This function reload this table
      const updateTable = async (event) => {
           if(event.field === 'deletedAct'){
                setTimeout(() => {
-                    getRooms();
+                    getEmployees();
                },1000)
                
            }
      }
 
-     return (
-
+  return (
+     <>
+     { !showSpinner ? (
           <>
-               { !showSpinner ? (
-                    <>
-                         {/* HEADER SECTION */}
-                         <Box mb={3}>
-                              <Grid container 
-                                    spacing={2}
-                                    justifyContent='space-between'
-                              >
-                                   <Grid item 
-                                         xs={12} 
-                                         md={6}
-                                   >
-                                        <Grid container justifyContent='flex-start' alignItems='flex-end' >
-                                             <HrTittle />
-                                             <Typography variant='h5'>
-                                                 Rooms
-                                             </Typography>
-                                        </Grid>
-                                   </Grid>
-                                   
-                                   <Grid container 
-                                         justifyContent='flex-end' 
-                                         item 
-                                         xs={12} 
-                                         md={6}
-                                   >
-                                        <Button color='primary' 
-                                                variant='text'
-                                                onClick={ () => navigateTo('/form-rooms') }
-                                                startIcon={<AddIcon />}
-                                        >
-                                             Room
-                                        </Button>
-                                   </Grid>
+               {/* HEADER SECTION */}
+               <Box mb={3}>
+                    <Grid container 
+                          spacing={2}
+                          justifyContent='space-between'
+                    >
+                         <Grid item 
+                               xs={12} 
+                               md={6}
+                         >
+                              <Grid container justifyContent='flex-start' alignItems='flex-end' >
+                                   <HrTittle />
+                                   <Typography variant='h5'>
+                                       Employees
+                                   </Typography>
                               </Grid>
+                         </Grid>
+                         
+                         <Grid container 
+                               justifyContent='flex-end' 
+                               item 
+                               xs={12} 
+                               md={6}
+                         >
+                              <Button color='primary' 
+                                      variant='text'
+                                      onClick={ () => navigateTo('/form-rooms') }
+                                      startIcon={<AddIcon />}
+                              >
+                                   Employee
+                              </Button>
+                         </Grid>
+                    </Grid>
 
-                              <Grid container 
-                                    spacing={2}
-                                    justifyContent='space-between'
-                              >
-                                   <Grid item 
-                                         xs={12} 
-                                   >
-                                        <Hr />
-                                   </Grid>
-                              </Grid>
-                         </Box>
-                         {/* TABLE RESPONSIVE */}
-                         <Hidden smDown>
-                              <div style={{ height: 300, width: '100%' }}>
-                                  <DataGrid
-                                    rows={rooms}
-                                    getRowId ={(row) => row._id}
-                                    columns={columnsMdUp}
-                                    pageSize={3}
-                                    rowsPerPageOptions={[3]}
-                                    disableSelectionOnClick
-                                    onCellClick={ (e) => updateTable(e) }
-                                  />
-                              </div>
-                         </Hidden>
-                         <Hidden mdUp>
-                              <div style={{ height: 300, width: '100%' }}>
-                                  <DataGrid
-                                    rows={rooms}
-                                    getRowId ={(row) => row._id}
-                                    columns={columnsMdDown}
-                                    pageSize={3}
-                                    rowsPerPageOptions={[3]}
-                                    disableSelectionOnClick
-                                    onCellClick={ (e) => updateTable(e) }
-                                  />
-                              </div>
-                         </Hidden>
-                    </>
-               ) : (
-                    <Spinner />
-               ) }
-                
+                    <Grid container 
+                          spacing={2}
+                          justifyContent='space-between'
+                    >
+                         <Grid item 
+                               xs={12} 
+                         >
+                              <Hr />
+                         </Grid>
+                    </Grid>
+               </Box>
+               {/* TABLE RESPONSIVE */}
+               <Hidden smDown>
+                    <div style={{ height: 300, width: '100%' }}>
+                        <DataGrid
+                          rows={employees}
+                          getRowId ={(row) => row._id}
+                          columns={columnsMdUp}
+                          pageSize={3}
+                          rowsPerPageOptions={[3]}
+                          disableSelectionOnClick
+                          onCellClick={ (e) => updateTable(e) }
+                        />
+                    </div>
+               </Hidden>
+               <Hidden mdUp>
+                    <div style={{ height: 300, width: '100%' }}>
+                        <DataGrid
+                          rows={employees}
+                          getRowId ={(row) => row._id}
+                          columns={columnsMdDown}
+                          pageSize={3}
+                          rowsPerPageOptions={[3]}
+                          disableSelectionOnClick
+                          onCellClick={ (e) => updateTable(e) }
+                        />
+                    </div>
+               </Hidden>
           </>
-       
-     )
+     ) : (
+          <Spinner />
+     ) }
+      
+</>
+  )
 }
 
-export default RoomsDash
+export default Employees

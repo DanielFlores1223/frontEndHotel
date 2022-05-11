@@ -152,7 +152,7 @@ const RoomsSelect = ({roomsAvailableDates, setRoomsReservation, roomsReservation
            </Grid>
            <Grid container justifyContent='center' spacing={2}>
                  {
-                      floor1.map.length === 0 && (
+                      floor1.length === 0 && (
                          <Grid container justifyContent='center' item xs={12} >
                               <Typography variant='body1' color='textSecondary' align='center'>
                                    There aren't available rooms in this floor.
@@ -199,7 +199,7 @@ const RoomsSelect = ({roomsAvailableDates, setRoomsReservation, roomsReservation
            </Grid>
            <Grid container justifyContent='center' spacing={2}>
                  {
-                      floor2.map.length === 0 && (
+                      floor2.length === 0 && (
                          <Grid container justifyContent='center' item xs={12} >
                               <Typography variant='body1' color='textSecondary' align='center'>
                                    There aren't available rooms in this floor.
